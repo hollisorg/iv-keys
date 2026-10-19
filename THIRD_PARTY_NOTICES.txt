@@ -1,0 +1,22 @@
+IV Keys
+(c) 2026 Infinite Variance. Released under the MIT licence:
+https://github.com/hollisorg/iv-keys
+
+IV Keys is built from the open-source software listed below. Full licence texts are in the
+"licenses" folder next to this file.
+
+------------------------------------------------------------------------------------
+koffi (native bridge to Windows APIs: SendInput, SystemParametersInfo, GetAsyncKeyState…)
+  Licence: MIT. licenses/koffi-MIT.txt
+  Source code: https://github.com/Koromix/koffi
+
+Electron 44 and Chromium
+  Licence: MIT (Electron) and the Chromium licences
+  Licence text: LICENSE.electron.txt and LICENSES.chromium.html in the install folder
+
+React and React DOM 19
+  Licence: MIT. licenses/React-MIT.txt
+
+Fonts: Barlow, DM Sans, JetBrains Mono
+  Licence: SIL Open Font License 1.1
+  licenses/Barlow-OFL.txt, licenses/DMSans-OFL.txt, licenses/JetBrainsMono-OFL.txt
