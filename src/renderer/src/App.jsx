@@ -9,7 +9,8 @@ export default function App() {
   const [view, setView] = useState(null)
   const [room, setRoom] = useState(null)
   const [voice, setVoice] = useState({ connected: false, state: 'idle', locked: false })
-  const [mods, setMods] = useState({ shift: false, caps: false, ctrl: false, alt: false })
+  const [keyLock, setKeyLock] = useState({ locked: false, blocked: 0 })
+  const [mods, setMods] = useState({ shift: false, caps: false, ctrl: false, alt: false, win: false })
   const [physicalShift, setPhysicalShift] = useState(false)
   const [toast, setToast] = useState('')
   const [busy, setBusy] = useState(false)
@@ -26,11 +27,13 @@ export default function App() {
     window.keys.view.get().then(setView)
     window.keys.room.status().then(setRoom)
     window.keys.voice.state().then(setVoice)
+    window.keys.lock.state().then(setKeyLock)
     window.keys.app.update().then(setUpdate)
     const offs = [
       window.keys.view.onChange(setView),
       window.keys.room.onStatus(setRoom),
       window.keys.voice.onState(setVoice),
+      window.keys.lock.onState(setKeyLock),
       window.keys.onPhysicalShift(setPhysicalShift),
       window.keys.onToast(say),
       window.keys.app.onUpdate(setUpdate)
@@ -56,6 +59,16 @@ export default function App() {
     }
   }
 
+  const toggleLock = async () => {
+    try {
+      const s = await window.keys.lock.set(!keyLock.locked)
+      setKeyLock(s)
+      say(s.locked ? 'Keyboard locked. Hold both Ctrl keys 2 s to unlock' : 'Keyboard unlocked')
+    } catch (err) {
+      say(clean(err))
+    }
+  }
+
   const onVoice = async (cmd) => {
     try {
       const r = await window.keys.voice.command(cmd)
@@ -72,10 +85,10 @@ export default function App() {
       <div className="brand">
         <span className="brand-mark">IV</span>
         <span className="mono">Keys</span>
-        {full && <span className="mono dim">/ Infinite Variance</span>}
       </div>
       {full && room && (
         <div className="chips">
+          <Chip label="Lock" on={keyLock.locked} />
           <Chip label="Filter Keys" on={room.filterKeys} />
           <Chip label="Stream Deck" on={room.streamDeck} />
           <Chip label="IV Voice" on={voice.connected} />
@@ -84,6 +97,9 @@ export default function App() {
       <span className="toast mono">{toast}</span>
       <div className="tools">
         {!full && <VoiceButton voice={voice} onVoice={onVoice} />}
+        <button className={`tool ${keyLock.locked ? 'tool-on' : ''}`} onClick={toggleLock} title="Block the physical keyboard (on-screen keys still work)">
+          {keyLock.locked ? 'Locked' : 'Lock'}
+        </button>
         <button className="tool" onClick={() => window.keys.screenshot()}>
           Screenshot
         </button>
@@ -135,7 +151,7 @@ export default function App() {
         {toolbar}
         {full ? (
           <div className="full-grid">
-            <Controls room={room} voice={voice} onAction={onAction} onVoice={onVoice} busy={busy} />
+            <Controls room={room} voice={voice} keyLock={keyLock} onToggleLock={toggleLock} onAction={onAction} onVoice={onVoice} busy={busy} />
             {keyboard}
           </div>
         ) : (

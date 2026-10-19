@@ -1,7 +1,7 @@
 // Full view, left column: room modes, direct controls and IV Voice.
-export default function Controls({ room, voice, onAction, onVoice, busy }) {
-  const babyActive = room && room.filterKeys && !room.streamDeck
-  const workActive = room && !room.filterKeys && (room.streamDeck || !room.streamDeckInstalled)
+export default function Controls({ room, voice, keyLock, onToggleLock, onAction, onVoice, busy }) {
+  const babyActive = room && keyLock.locked && !room.streamDeck
+  const workActive = room && !keyLock.locked && !room.filterKeys && (room.streamDeck || !room.streamDeckInstalled)
 
   return (
     <aside className="controls">
@@ -11,17 +11,24 @@ export default function Controls({ room, voice, onAction, onVoice, busy }) {
         <div className="modes">
           <button className={`mode ${babyActive ? 'mode-on' : ''}`} disabled={busy} onClick={() => onAction('babyMode', 'Baby Mode is on')}>
             <span className="mode-name">Baby mode</span>
-            <span className="mode-detail">Filter Keys on · Stream Deck off</span>
+            <span className="mode-detail">Keyboard locked · Stream Deck off</span>
           </button>
           <button className={`mode ${workActive ? 'mode-on' : ''}`} disabled={busy} onClick={() => onAction('workMode', 'Work Mode is on')}>
             <span className="mode-name">Work mode</span>
-            <span className="mode-detail">Filter Keys off · Stream Deck on</span>
+            <span className="mode-detail">Keyboard unlocked · Stream Deck on</span>
           </button>
         </div>
       </section>
 
       <section className="panel">
         <p className="mono label">02 / Direct</p>
+        <Switch
+          label="Keyboard lock"
+          detail={keyLock.locked ? `Physical keys blocked${keyLock.blocked ? ` (${keyLock.blocked} so far)` : ''} · hold both Ctrl 2 s to unlock` : 'Blocks the physical keyboard; on-screen keys still type'}
+          on={keyLock.locked}
+          disabled={busy}
+          onClick={onToggleLock}
+        />
         <Switch
           label="Filter Keys"
           detail="Ignores quick or repeated key presses"

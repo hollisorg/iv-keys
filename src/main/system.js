@@ -35,9 +35,9 @@ export async function status() {
   return { filterKeys: filter, streamDeck: await streamDeckRunning(), streamDeckInstalled: fs.existsSync(STREAM_DECK) }
 }
 
+// The keyboard lock half of each mode lives in index.js (it owns the hook).
 export const actions = {
   async babyMode() {
-    setFilterKeys(true)
     await stopStreamDeck()
   },
   async workMode() {

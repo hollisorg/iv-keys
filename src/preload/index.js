@@ -20,6 +20,11 @@ contextBridge.exposeInMainWorld('keys', {
     action: (name) => ipcRenderer.invoke('room:action', name),
     onStatus: on('room:status')
   },
+  lock: {
+    state: () => ipcRenderer.invoke('lock:state'),
+    set: (on) => ipcRenderer.invoke('lock:set', on),
+    onState: on('lock:state')
+  },
   voice: {
     state: () => ipcRenderer.invoke('voice:state'),
     command: (cmd) => ipcRenderer.invoke('voice:command', cmd),
@@ -34,5 +39,5 @@ contextBridge.exposeInMainWorld('keys', {
     onUpdate: on('update:changed')
   },
   // Development-only; the handler isn't registered in packaged builds.
-  dev: { typeTest: () => ipcRenderer.invoke('dev:typeTest') }
+  dev: { typeTest: (opts) => ipcRenderer.invoke('dev:typeTest', opts) }
 })

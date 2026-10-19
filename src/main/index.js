@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Menu, nativeImage, screen, session, shell,
 import fs from 'node:fs'
 import path from 'node:path'
 import { clipboardSequence, forceForeground, foregroundHandle, foregroundProcessName, sendCombo, shiftHeld, typeText, VK, vkForChar } from './native'
+import { KeyboardLock } from './lock'
 import { actions, startIvVoice, status as roomStatus } from './system'
 import { initUpdater, updateState } from './updater'
 import { VoiceClient } from './voice'
@@ -61,6 +62,7 @@ let win = null
 let tray = null
 let updater = null
 const voice = new VoiceClient()
+const keyLock = new KeyboardLock()
 
 function send(channel, payload) {
   if (win && !win.isDestroyed()) win.webContents.send(channel, payload)
@@ -263,29 +265,44 @@ function registerIpc() {
   })
 
   // Typing: text as Unicode, or a combo when Ctrl/Alt are latched.
-  ipcMain.handle('key:text', (_e, { text, ctrl, alt, shift }) => {
+  const modifiers = ({ ctrl, alt, shift, win }) => [
+    ...(ctrl ? [VK.LCONTROL] : []),
+    ...(win ? [VK.LWIN] : []),
+    ...(alt ? [VK.LMENU] : []),
+    ...(shift ? [VK.LSHIFT] : [])
+  ]
+  ipcMain.handle('key:text', (_e, { text, ctrl, alt, shift, win }) => {
     if (typeof text !== 'string' || !text || text.length > 16) return
-    if (ctrl || alt) {
+    if (ctrl || alt || win) {
       const vk = vkForChar(text)
       if (vk == null) return
-      sendCombo([...(ctrl ? [VK.LCONTROL] : []), ...(alt ? [VK.LMENU] : []), ...(shift ? [VK.LSHIFT] : []), vk])
+      sendCombo([...modifiers({ ctrl, alt, shift, win }), vk])
     } else {
       typeText(text)
     }
   })
   const ALLOWED_VK = new Set([VK.BACK, VK.TAB, VK.RETURN, VK.ESCAPE, VK.LEFT, VK.UP, VK.RIGHT, VK.DOWN, VK.DELETE, VK.SPACE])
-  ipcMain.handle('key:special', (_e, { vk, ctrl, alt, shift }) => {
+  ipcMain.handle('key:special', (_e, { vk, ctrl, alt, shift, win }) => {
+    if (vk === VK.LWIN) return sendCombo([VK.LWIN]) // Win on its own: Start menu
     if (!ALLOWED_VK.has(vk)) return
-    sendCombo([...(ctrl ? [VK.LCONTROL] : []), ...(alt ? [VK.LMENU] : []), ...(shift ? [VK.LSHIFT] : []), vk])
+    sendCombo([...modifiers({ ctrl, alt, shift, win }), vk])
   })
 
   ipcMain.handle('room:status', () => roomStatus())
   ipcMain.handle('room:action', async (_e, name) => {
     if (!actions[name]) throw new Error('Unknown action')
+    if (name === 'babyMode') keyLock.lock()
+    if (name === 'workMode') keyLock.unlock()
     await actions[name]()
     const s = await roomStatus()
     send('room:status', s)
     return s
+  })
+
+  ipcMain.handle('lock:state', () => keyLock.state())
+  ipcMain.handle('lock:set', (_e, on) => {
+    on ? keyLock.lock() : keyLock.unlock()
+    return keyLock.state()
   })
 
   ipcMain.handle('voice:state', () => voice.state)
@@ -308,7 +325,9 @@ function registerIpc() {
   // It refuses to send a single key unless its own window is confirmed to be in front, so a
   // failed focus can never type into another app.
   if (!app.isPackaged) {
-    ipcMain.handle('dev:typeTest', async () => {
+    ipcMain.handle('dev:typeTest', async (_e, { withLock = false } = {}) => {
+      if (withLock) keyLock.lock()
+      const before = keyLock.passed
       const target = new BrowserWindow({ width: 320, height: 120, show: false, alwaysOnTop: true })
       await target.loadURL('data:text/html,<textarea id=t autofocus style="width:100%;height:100%"></textarea>')
       const hwnd = target.getNativeWindowHandle().readBigUInt64LE(0)
@@ -329,8 +348,10 @@ function registerIpc() {
       await new Promise((r) => setTimeout(r, 300))
       const value = await target.webContents.executeJavaScript("document.getElementById('t').value")
       target.destroy()
-      if (!focused || sent < steps.length) return { aborted: true, focused, sent, value }
-      return { expected: 'ac!😀', value, pass: value === 'ac!😀' }
+      const lock = withLock ? { passedThroughLock: keyLock.passed - before, physicalBlocked: keyLock.blocked } : undefined
+      if (withLock) keyLock.unlock()
+      if (!focused || sent < steps.length) return { aborted: true, focused, sent, value, lock }
+      return { expected: 'ac!😀', value, pass: value === 'ac!😀', lock }
     })
   }
 }
@@ -347,10 +368,15 @@ app.whenReady().then(() => {
   createTray()
   updater = initUpdater((s) => send('update:changed', s))
   voice.on('change', (s) => send('voice:state', s))
+  keyLock.on('change', (s) => send('lock:state', s))
+  keyLock.on('unlocked-by-keyboard', () => send('toast', 'Keyboard unlocked (both Ctrl keys held)'))
   setInterval(tick, 60)
   refreshStatus()
   setInterval(refreshStatus, 3000)
 })
 
-app.on('before-quit', () => voice.close())
+app.on('before-quit', () => {
+  keyLock.unlock()
+  voice.close()
+})
 app.on('window-all-closed', () => app.quit())
