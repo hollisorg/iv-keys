@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { clipboardSequence, forceForeground, foregroundHandle, foregroundProcessName, sendCombo, shiftHeld, typeText, VK, vkForChar } from './native'
 import { KeyboardLock } from './lock'
-import { actions, startIvVoice, status as roomStatus } from './system'
+import { actions, setPowerGuard, startIvVoice, status as roomStatus } from './system'
 import { initUpdater, updateState } from './updater'
 import { VoiceClient } from './voice'
 
@@ -159,9 +159,29 @@ function createTray() {
   tray = new Tray(nativeImage.createFromPath(path.join(app.getAppPath(), 'resources', 'tray.png')))
   tray.setToolTip('IV Keys')
   tray.on('click', showWindow)
+  buildTrayMenu(false)
+}
+
+let trayGuard = null
+function buildTrayMenu(powerGuard) {
+  if (!tray || trayGuard === powerGuard) return
+  trayGuard = powerGuard
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: 'Show IV Keys', click: showWindow },
+      {
+        label: 'Power button guard',
+        type: 'checkbox',
+        checked: powerGuard,
+        click: async (item) => {
+          try {
+            await setPowerGuard(item.checked)
+          } catch (err) {
+            send('toast', err.message)
+          }
+          refreshStatus()
+        }
+      },
       { type: 'separator' },
       { label: 'Quit', click: () => app.quit() }
     ])
@@ -199,7 +219,9 @@ async function refreshStatus() {
   if (statusBusy) return
   statusBusy = true
   try {
-    send('room:status', await roomStatus())
+    const s = await roomStatus()
+    send('room:status', s)
+    buildTrayMenu(s.powerGuard)
   } finally {
     statusBusy = false
   }
@@ -296,6 +318,7 @@ function registerIpc() {
     await actions[name]()
     const s = await roomStatus()
     send('room:status', s)
+    buildTrayMenu(s.powerGuard)
     return s
   })
 

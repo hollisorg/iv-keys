@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.2.0 (2026-10-22)
+
+- **Power button guard** so a curious toddler can't shut the PC down:
+  - Sets the power and sleep buttons to "Do nothing" on the active power plan. No admin needed.
+  - Switch it off and the previous actions come back (they're saved, so this survives restarts).
+  - **Baby mode** turns it on. **Work mode** leaves it on; use the switch or the tray menu to
+    turn it off.
+  - Stays on if IV Keys closes, and shows as the **Power** chip.
+  - Holding the button for about 4 seconds still forces the PC off. That's hardware, so a physical
+    button cover is the fix for it.
+
 ## 4.1.0 (2026-10-19)
 
 - **Windows key** between Ctrl and Alt. Tap Win then a key for shortcuts (Win + E, Win + D, Win + V…);

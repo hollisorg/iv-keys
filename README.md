@@ -20,8 +20,13 @@ IV Voice and IV Downloader, with the same features.
   - If IV Voice isn't running, the first tap starts it.
   - The button follows IV Voice's state live over its local control pipe.
 - **Room controls (full view):**
-  - **Baby mode:** Filter Keys on, Stream Deck off.
-  - **Work mode:** Filter Keys off, Stream Deck on.
+  - **Baby mode:** physical keyboard locked, power button guard on, Stream Deck off.
+  - **Work mode:** keyboard unlocked, Filter Keys off, Stream Deck on. It leaves the power button
+    guard on, so running work stays protected while you're at the desk.
+  - **Power button guard:** sets the power and sleep buttons to "Do nothing" on the active power
+    plan, and puts the previous actions back when you switch it off (also in the tray menu). It
+    stays on if IV Keys closes. Holding the power button for about 4 seconds is a hardware
+    force-off that no software can block; a physical button cover handles that.
   - Direct switches for each, plus live status chips.
 - **Screenshot.** Hides IV Keys, opens Windows' snipping tool, and comes back when you're done.
 - **Views.** Keyboard only (compact) or Controls (full), each with its own zoom. It remembers the

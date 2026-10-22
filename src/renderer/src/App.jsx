@@ -89,6 +89,7 @@ export default function App() {
       {full && room && (
         <div className="chips">
           <Chip label="Lock" on={keyLock.locked} />
+          <Chip label="Power" on={room.powerGuard} />
           <Chip label="Filter Keys" on={room.filterKeys} />
           <Chip label="Stream Deck" on={room.streamDeck} />
           <Chip label="IV Voice" on={voice.connected} />
