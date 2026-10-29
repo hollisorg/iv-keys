@@ -6,7 +6,7 @@ export default function Controls({ room, voice, keyLock, onToggleLock, onAction,
   return (
     <aside className="controls">
       <section className="panel">
-        <p className="mono label">01 / The room</p>
+        <p className="mono label">01 · The room</p>
         <h2 className="panel-title">Set the room.</h2>
         <div className="modes">
           <button className={`mode ${babyActive ? 'mode-on' : ''}`} disabled={busy} onClick={() => onAction('babyMode', 'Baby Mode is on')}>
@@ -21,7 +21,7 @@ export default function Controls({ room, voice, keyLock, onToggleLock, onAction,
       </section>
 
       <section className="panel">
-        <p className="mono label">02 / Direct</p>
+        <p className="mono label">02 · Direct</p>
         <Switch
           label="Keyboard lock"
           detail={keyLock.locked ? `Physical keys blocked${keyLock.blocked ? ` (${keyLock.blocked} so far)` : ''} · hold both Ctrl 2 s to unlock` : 'On-screen keys still type'}
@@ -55,7 +55,7 @@ export default function Controls({ room, voice, keyLock, onToggleLock, onAction,
       </section>
 
       <section className="panel voice-panel">
-        <p className="mono label">03 / IV Voice</p>
+        <p className="mono label">03 · IV Voice</p>
         <VoiceButton voice={voice} onVoice={onVoice} big />
         <div className="voice-row">
           <button className="btn-ghost" disabled={!voice.connected} onClick={() => onVoice('paste-last')}>

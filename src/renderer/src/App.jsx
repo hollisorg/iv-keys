@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Keyboard from './components/Keyboard'
 import Controls, { VoiceButton } from './components/Controls'
 import EmojiTray from './components/EmojiTray'
+import mark from './assets/keys-mark.png'
 
 const clean = (err) => String(err?.message || err).replace(/^Error invoking remote method '[^']+': (Error: )?/, '')
 
@@ -83,7 +84,7 @@ export default function App() {
   const toolbar = (
     <div className="toolbar">
       <div className="brand">
-        <span className="brand-mark">IV</span>
+        <img className="brand-logo" src={mark} alt="" />
         <span className="mono">Keys</span>
       </div>
       {full && room && (
@@ -135,7 +136,7 @@ export default function App() {
     <section className="keys-card">
       {full && (
         <div className="keys-head">
-          <p className="mono label">04 / The keys</p>
+          <p className="mono label">04 · The keys</p>
           <h1 className="keys-title">
             Type anywhere<span className="accent">.</span>
           </h1>

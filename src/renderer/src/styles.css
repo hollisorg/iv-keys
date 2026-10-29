@@ -1,4 +1,4 @@
-/* Infinite Variance palette + type, from infinitevariance.ai (shared with IV Voice / IV Downloader) */
+/* Infinite Variance palette and type, matching IV Studio and IV Chat */
 :root {
   --ink: #100c0e;
   --ink-2: #19131a;
@@ -9,9 +9,10 @@
   --paper: #f1ede5;
   --paper-dim: rgba(241, 237, 229, 0.72);
   --paper-faint: rgba(241, 237, 229, 0.5);
+  --cream: #f4ecdc; /* the "What If?" lettering */
   --pink: #f19dac;
   --red: #f44859;
-  --display: 'Barlow', Impact, sans-serif;
+  --display: 'Barlow Condensed', 'Barlow', Impact, sans-serif;
   --body: 'DM Sans', Arial, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
   color-scheme: dark;
@@ -116,10 +117,11 @@ button:disabled {
   flex: none;
 }
 
-.brand-mark {
-  font: 600 13px/1 var(--display);
-  border: 1px solid var(--paper);
-  padding: 4px 5px 3px;
+.brand-logo {
+  height: 20px;
+  width: auto;
+  display: block;
+  -webkit-user-drag: none;
 }
 
 .chips {
@@ -175,9 +177,9 @@ button:disabled {
 .tool {
   height: 30px;
   padding: 0 12px;
-  border-radius: 9px;
+  border: 1px solid var(--line);
   background: var(--ink-3);
-  font: 600 14px/1 var(--display);
+  font: 700 15px/1 var(--display);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   transition: background 0.12s;
@@ -185,6 +187,7 @@ button:disabled {
 
 .tool:hover {
   background: var(--ink-4);
+  border-color: var(--pink);
 }
 
 .tool-sq {
@@ -194,12 +197,13 @@ button:disabled {
 }
 
 .tool-on {
-  background: var(--pink);
-  color: var(--ink);
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--paper);
 }
 
 .tool-on:hover {
-  background: #f6b6c1;
+  background: #f6606f;
 }
 
 .tool-close:hover {
@@ -233,7 +237,7 @@ button:disabled {
   gap: 8px;
   height: 30px;
   padding: 0 14px;
-  border-radius: 9px;
+  border-radius: 0;
   background: var(--red);
   color: var(--paper);
   font: 600 14px/1 var(--display);
@@ -284,7 +288,7 @@ button:disabled {
 .voice-big {
   width: 100%;
   height: 56px;
-  border-radius: 14px;
+  border-radius: 0;
   font-size: 20px;
 }
 
@@ -309,8 +313,9 @@ button:disabled {
 
 .keys-title {
   margin: 0;
-  font: 600 54px/0.9 var(--display);
-  letter-spacing: -0.03em;
+  font: 800 58px/0.86 var(--display);
+  letter-spacing: -0.01em;
+  color: var(--cream);
   text-transform: uppercase;
 }
 
@@ -404,8 +409,9 @@ button:disabled {
 
 .panel-title {
   margin: 0 0 12px;
-  font: 600 30px/0.9 var(--display);
-  letter-spacing: -0.02em;
+  font: 800 32px/0.9 var(--display);
+  letter-spacing: -0.01em;
+  color: var(--cream);
   text-transform: uppercase;
 }
 
@@ -420,7 +426,7 @@ button:disabled {
   gap: 6px;
   text-align: left;
   padding: 12px;
-  border-radius: 14px;
+  border-radius: 0;
   background: var(--ink-3);
   border: 1px solid var(--line);
   transition: background 0.12s, border-color 0.12s;
@@ -487,7 +493,6 @@ button:disabled {
   flex: none;
   width: 40px;
   height: 23px;
-  border-radius: 12px;
   border: 1px solid var(--line-strong);
   position: relative;
   transition: background 0.15s, border-color 0.15s;
@@ -499,7 +504,6 @@ button:disabled {
   left: 3px;
   width: 15px;
   height: 15px;
-  border-radius: 50%;
   background: var(--paper-faint);
   transition: transform 0.18s, background 0.18s;
 }
@@ -528,7 +532,7 @@ button:disabled {
 
 .btn-ghost {
   height: 38px;
-  border-radius: 11px;
+  border-radius: 0;
   border: 1px solid var(--line-strong);
   font: 600 15px/1 var(--display);
   text-transform: uppercase;
@@ -573,7 +577,7 @@ button:disabled {
 .icon-btn {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--ink-3);
   font-size: 17px;
   line-height: 1;
