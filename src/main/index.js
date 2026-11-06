@@ -313,7 +313,7 @@ function registerIpc() {
   ipcMain.handle('room:status', () => roomStatus())
   ipcMain.handle('room:action', async (_e, name) => {
     if (!actions[name]) throw new Error('Unknown action')
-    if (name === 'babyMode') keyLock.lock()
+    if (name === 'babyMode') await keyLock.lock()
     if (name === 'workMode') keyLock.unlock()
     await actions[name]()
     const s = await roomStatus()
@@ -323,8 +323,9 @@ function registerIpc() {
   })
 
   ipcMain.handle('lock:state', () => keyLock.state())
-  ipcMain.handle('lock:set', (_e, on) => {
-    on ? keyLock.lock() : keyLock.unlock()
+  ipcMain.handle('lock:set', async (_e, on) => {
+    if (on) await keyLock.lock()
+    else keyLock.unlock()
     return keyLock.state()
   })
 
@@ -349,7 +350,7 @@ function registerIpc() {
   // failed focus can never type into another app.
   if (!app.isPackaged) {
     ipcMain.handle('dev:typeTest', async (_e, { withLock = false } = {}) => {
-      if (withLock) keyLock.lock()
+      if (withLock) await keyLock.lock()
       const before = keyLock.passed
       const target = new BrowserWindow({ width: 320, height: 120, show: false, alwaysOnTop: true })
       await target.loadURL('data:text/html,<textarea id=t autofocus style="width:100%;height:100%"></textarea>')
@@ -393,6 +394,7 @@ app.whenReady().then(() => {
   voice.on('change', (s) => send('voice:state', s))
   keyLock.on('change', (s) => send('lock:state', s))
   keyLock.on('unlocked-by-keyboard', () => send('toast', 'Keyboard unlocked (both Ctrl keys held)'))
+  keyLock.on('lost', () => send('toast', 'The keyboard lock stopped. Tap Lock to turn it back on'))
   setInterval(tick, 60)
   refreshStatus()
   setInterval(refreshStatus, 3000)

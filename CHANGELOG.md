@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.2.1 (2026-11-06)
+
+- **Fixed: IV Keys froze while the keyboard lock was on.** The window couldn't be moved and the
+  on-screen keys stopped typing. The lock now runs on its own thread instead of sharing one with
+  the window, so neither can hold the other up.
+- If the lock ever stops by itself, IV Keys now says so instead of quietly turning it off.
+- Lighter look in the style of IV Studio and IV Chat, with new artwork.
+- New app and tray icon.
+
 ## 4.2.0 (2026-10-22)
 
 - **Power button guard** so a curious toddler can't shut the PC down:
