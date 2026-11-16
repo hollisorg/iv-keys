@@ -3,11 +3,11 @@
 </p>
 
 <p align="center">
-  <a href="#install"><b>Install</b></a>
+  <a href="https://github.com/hollisorg/iv-keys/releases/latest/download/IV-Keys-Setup.exe"><b>Download for Windows</b></a>
   &nbsp;·&nbsp;
   <a href="#what-you-need">What you need</a>
   &nbsp;·&nbsp;
-  <a href="CHANGELOG.md">Changelog</a>
+  <a href="https://github.com/hollisorg/iv-keys/releases/latest">Release notes</a>
   &nbsp;·&nbsp;
   <a href="https://infinitevariance.ai">Infinite Variance</a>
 </p>
@@ -72,23 +72,20 @@ mode** (physical keyboard locked, power button off) and **Work mode**.
 
 ## Install
 
-IV Keys doesn't have a public download yet. Until it does, build it yourself:
+1. [Download `IV-Keys-Setup.exe`](https://github.com/hollisorg/iv-keys/releases/latest/download/IV-Keys-Setup.exe).
+2. Run it. The installer isn't code-signed yet, so Windows may show **"Windows protected your PC"**.
+   Click **More info → Run anyway**. It installs for your user only; no admin rights needed.
+3. IV Keys opens on the compact keyboard. Click **Controls** for the room switches. On first run it
+   carries over Baby Mode Control's saved view.
 
-```bash
-npm install
-node node_modules/electron/install.js   # npm 11 skips Electron's install script
-npm run dist
-```
-
-That writes `dist\IV-Keys-Setup.exe`, a per-user installer (no admin rights needed). The installer isn't
-code-signed yet, so Windows may show **"Windows protected your PC"**: click **More info → Run anyway**.
-On first run IV Keys carries over Baby Mode Control's saved view.
+IV Keys checks for updates when it opens and every six hours, and installs a downloaded update the next
+time it quits. What changed in each version is in the [changelog](CHANGELOG.md).
 
 ## Develop
 
 ```bash
 npm install
-node node_modules/electron/install.js
+node node_modules/electron/install.js   # npm 11 skips Electron's install script
 npm run dev
 ```
 
@@ -97,7 +94,8 @@ AppData redirected into Claude's package folder.
 
 IV Keys 4 is a rebuild of Baby Mode Control (a .NET WinForms app) in the same stack and style as
 IV Voice and IV Downloader, with the same features. Releases, code signing and auto-updates work the
-same as the other IV apps; see `docs/RELEASING.md` and `docs/CODE-SIGNING.md`.
+same as the other IV apps; see `docs/RELEASING.md` and `docs/CODE-SIGNING.md`. `npm run dist` writes
+`dist\IV-Keys-Setup.exe`.
 
 ## How it works
 
