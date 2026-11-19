@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.3.0 (2026-11-19)
+
+- **Join The IV Newsletter.** In the Controls view, a Newsletter button opens a small window to join The IV
+  Newsletter: one email a week from Matt about what's new in the IV apps, how things are made, and free tools.
+  It's opt-in: nothing is sent until you type your email and press Join. Kit, our email service, sends a
+  confirm email first, and you can unsubscribe any time. IV Keys doesn't keep your address, and your
+  keyboard settings are left exactly as they are.
+
 ## 4.2.1 (2026-11-06)
 
 - **Fixed: IV Keys froze while the keyboard lock was on.** The window couldn't be moved and the
