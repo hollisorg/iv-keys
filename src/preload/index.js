@@ -1,3 +1,4 @@
+import { newsletterBridge } from './newsletter'
 import { contextBridge, ipcRenderer } from 'electron'
 
 const on = (channel) => (cb) => {
@@ -7,6 +8,8 @@ const on = (channel) => (cb) => {
 }
 
 contextBridge.exposeInMainWorld('keys', {
+  // The IV Newsletter signup (src/main/newsletter.js)
+  newsletter: { ...newsletterBridge(ipcRenderer), openWindow: () => ipcRenderer.invoke('newsletter:window') },
   view: {
     get: () => ipcRenderer.invoke('view:get'),
     set: (patch) => ipcRenderer.invoke('view:set', patch),

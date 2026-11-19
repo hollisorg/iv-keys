@@ -1,3 +1,4 @@
+import { createNewsletter, fileStore, registerNewsletter } from './newsletter'
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, screen, session, shell, Tray } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -150,6 +151,39 @@ function createWindow() {
   else win.loadFile(path.join(__dirname, '../renderer/index.html'))
 }
 
+// The IV Newsletter gets its own small, normal window: the keyboard window never takes focus, so nobody could type
+// an email address into it. Same renderer, opened with ?newsletter=1 (src/renderer/src/components/NewsletterPage.jsx).
+let newsletterWin = null
+function openNewsletterWindow() {
+  if (newsletterWin && !newsletterWin.isDestroyed()) {
+    newsletterWin.show()
+    newsletterWin.focus()
+    return
+  }
+  newsletterWin = new BrowserWindow({
+    width: 480,
+    height: 460,
+    minWidth: 360,
+    minHeight: 380,
+    title: 'The IV Newsletter',
+    backgroundColor: '#100c0e',
+    autoHideMenuBar: true,
+    alwaysOnTop: true,
+    show: false,
+    icon: path.join(app.getAppPath(), 'resources', 'icon.png'),
+    webPreferences: { preload: path.join(__dirname, '../preload/index.js'), contextIsolation: true, sandbox: true, nodeIntegration: false }
+  })
+  newsletterWin.setMenu(null)
+  newsletterWin.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+  newsletterWin.webContents.on('will-navigate', (e) => e.preventDefault())
+  newsletterWin.once('ready-to-show', () => newsletterWin.show())
+  newsletterWin.on('closed', () => {
+    newsletterWin = null
+  })
+  if (process.env.ELECTRON_RENDERER_URL) newsletterWin.loadURL(`${process.env.ELECTRON_RENDERER_URL}?newsletter=1`)
+  else newsletterWin.loadFile(path.join(__dirname, '../renderer/index.html'), { query: { newsletter: '1' } })
+}
+
 function showWindow() {
   if (!win) createWindow()
   else win.showInactive()
@@ -271,6 +305,9 @@ function finishSnip() {
 // ---------- IPC ----------
 
 function registerIpc() {
+  // The IV Newsletter (src/main/newsletter.js, shared by every IV app): sends only an address typed and joined,
+  // keeps only the join date. IV_NEWSLETTER_URL points a test copy at a local stand-in.
+  registerNewsletter(ipcMain, shell, createNewsletter({ app: 'iv-keys', version: app.getVersion(), store: fileStore(path.join(app.getPath('userData'), 'newsletter.json')) }))
   ipcMain.handle('view:get', () => view)
   ipcMain.handle('view:set', (_e, patch = {}) => {
     if (patch.mode === 'compact' || patch.mode === 'full') view.mode = patch.mode
@@ -342,6 +379,7 @@ function registerIpc() {
 
   ipcMain.handle('screenshot', () => screenshot())
   ipcMain.handle('app:quit', () => app.quit())
+  ipcMain.handle('newsletter:window', () => openNewsletterWindow())
   ipcMain.handle('update:state', () => updateState())
   ipcMain.handle('update:install', () => updater?.install())
 

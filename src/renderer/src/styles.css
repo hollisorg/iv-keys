@@ -619,3 +619,7 @@ button:disabled {
     transition: none !important;
   }
 }
+
+/* The newsletter window (NewsletterPage.jsx): a solid page, unlike the transparent keyboard window. */
+.newsletter-page { box-sizing: border-box; min-height: 100%; padding: 24px; background: var(--ink); }
+.newsletter-page .ivnl { --ivnl-accent: var(--red, #f44859); max-width: none; }

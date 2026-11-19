@@ -117,6 +117,11 @@ export default function App() {
             +
           </button>
         </div>
+        {full && (
+          <button className="tool" onClick={() => window.keys.newsletter.openWindow()} title="Join The IV Newsletter">
+            Newsletter
+          </button>
+        )}
         <button className="tool" onClick={() => setViewPatch({ mode: full ? 'compact' : 'full' })}>
           {full ? 'Keyboard only' : 'Controls'}
         </button>

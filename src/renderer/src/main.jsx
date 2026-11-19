@@ -9,9 +9,10 @@ import '@fontsource/dm-sans/600.css'
 import '@fontsource/jetbrains-mono/400.css'
 import './styles.css'
 import App from './App'
+import NewsletterPage from './components/NewsletterPage'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    {new URLSearchParams(location.search).has('newsletter') ? <NewsletterPage /> : <App />}
   </StrictMode>
 )
